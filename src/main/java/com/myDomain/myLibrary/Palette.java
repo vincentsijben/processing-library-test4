@@ -22,11 +22,12 @@ public class Palette {
     public Palette(PApplet theParent) {
         this.parent = theParent;
     }
-
+ 
     /**
      * getPalette returns a an array containing five colors defined as integers
+     * @return hallo
      */
-    public int[] getPalette() {
+    public int[] getPalette() { 
         int numColors = 5;
         int[] palette = new int[numColors];
         this.parent.pushStyle();

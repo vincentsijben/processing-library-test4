@@ -1,9 +1,9 @@
 package com.myDomain.myLibrary;
 
+import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-import java.util.ArrayList;
 
 /**
  * This is an example class within library myLibrary.
@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * package 'com.myDomain.myLibrary' to your own library naming convention.
  */
 
-public class Grid {
+public class Grid { 
 
     // parent is a reference to the parent sketch, and to Processing commands
     PApplet parent;
@@ -29,7 +29,7 @@ public class Grid {
 
         // parent is a reference to the parent sketch, and to Processing commands
         parent = theParent;
-
+PApplet.println("version 22");
         dots = new ArrayList<Dot>();
 
         int gridSizeY = (int) parent.random(3, 16);

@@ -41,7 +41,7 @@ group = "com.myDomain"
 // - MINOR: Increases when you add new features that are backward-compatible.
 // - PATCH: Increases when you make backward-compatible bug fixes.
 // You can update these numbers as you release new versions of your library.
-version = "1.0.0"
+version = "1.0.2"
 
 // The location of your sketchbook folder. The sketchbook folder holds your installed
 // libraries, tools, and modes. It is needed if you:
@@ -77,7 +77,7 @@ if(currentOS.isMacOsX) {
 }
 // If you need to set the sketchbook location manually, uncomment out the following
 // line and set sketchbookLocation to the correct location
-// sketchbookLocation = "$userHome/sketchbook"
+sketchbookLocation = "$userHome/Docs/processing"
 
 
 // Repositories where dependencies will be fetched from.
@@ -168,7 +168,7 @@ tasks.javadoc.get().mustRunAfter("build")
 
 tasks.register("buildReleaseArtifacts") {
     group = "processing"
-    dependsOn("clean","build","javadoc", "writeLibraryProperties")
+    dependsOn("clean","build","jar", "javadoc", "writeLibraryProperties")
     finalizedBy("packageRelease", "duplicateZipToPdex")
 
     doFirst {
@@ -183,8 +183,14 @@ tasks.register("buildReleaseArtifacts") {
         println("Creating package...")
 
         println("Copy library...")
+        //copy {
+         //   from(layout.buildDirectory.file("libs/${libName}.jar"))
+          //  into("$releaseDirectory/library")
+        //}
         copy {
-            from(layout.buildDirectory.file("libs/${libName}.jar"))
+            from(tasks.named("jar").map { it.outputs.files }) {
+                include("${libName}.jar")
+            }
             into("$releaseDirectory/library")
         }
 
@@ -256,18 +262,25 @@ tasks.register("deployToProcessingSketchbook") {
     group = "processing"
     dependsOn("buildReleaseArtifacts")
 
-    doFirst {
-        println("Copy to sketchbook  $sketchbookLocation ...")
-    }
-    val installDirectory = "$sketchbookLocation/libraries/$libName"
-    copy {
-        from(releaseDirectory)
-        include("library.properties",
-            "examples/**",
-            "library/**",
-            "reference/**",
-            "src/**"
-        )
-        into(installDirectory)
+    val installDirectory = file("$sketchbookLocation/libraries/$libName")
+
+    doLast {
+   
+        println("Removing old install from $installDirectory")
+        delete(installDirectory)
+    
+        println("Copying fresh build to sketchbook $sketchbookLocation...")
+        project.copy {
+            from(releaseDirectory) {
+                include(
+                    "library.properties",
+                    "examples/**",
+                    "library/**",
+                    "reference/**",
+                    "src/**"
+                )
+            }
+            into(installDirectory)
+        }
     }
 }
